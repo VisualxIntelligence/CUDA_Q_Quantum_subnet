@@ -1,0 +1,51 @@
+# CUDA-Q Configuration for Quantum Subnet
+# Default configuration optimized for single GPU setups
+
+# Core settings
+enabled: true
+fallback_to_qiskit: true
+auto_detect_hardware: true
+
+# Backend preferences
+nvidia_enabled: true
+mgpu_enabled: true
+mqpu_enabled: true
+remote_mqpu_enabled: false
+
+# Performance thresholds (qubits)
+small_circuit_qubits: 20
+medium_circuit_qubits: 30
+large_circuit_qubits: 40
+memory_pooling_threshold_gb: 8.0
+
+# Execution settings
+max_parallel_circuits: 1000
+batch_optimization: true
+max_memory_gb: 320.0
+default_shots: 1000
+
+# Performance optimization
+performance:
+  enable_profiling: false
+  memory_optimization: true
+  cache_kernels: true
+  parallel_compilation: true
+  optimization_level: 2
+
+# Logging configuration
+logging:
+  log_level: "INFO"
+  log_file: null
+  log_cuda_q_operations: true
+  log_performance_metrics: true
+  log_backend_selection: true
+
+# Installation settings
+installation:
+  install_method: "pip"
+  version: "latest"
+  cuda_version: "12.0"
+  python_version: "3.11"
+  install_path: null
+  verify_installation: true
+

@@ -1,0 +1,51 @@
+# CUDA-Q High-Performance Configuration
+# Optimized for multi-GPU setups with maximum performance
+
+# Core settings
+enabled: true
+fallback_to_qiskit: false  # Disable fallback for maximum performance
+auto_detect_hardware: true
+
+# Backend preferences - all enabled for maximum flexibility
+nvidia_enabled: true
+mgpu_enabled: true
+mqpu_enabled: true
+remote_mqpu_enabled: true
+
+# Aggressive performance thresholds
+small_circuit_qubits: 24    # Higher threshold for single GPU
+medium_circuit_qubits: 32   # Utilize multi-GPU earlier
+large_circuit_qubits: 48    # Support larger circuits
+memory_pooling_threshold_gb: 4.0  # Earlier memory pooling
+
+# High-throughput execution settings
+max_parallel_circuits: 2000
+batch_optimization: true
+max_memory_gb: 512.0  # Support high-memory configurations
+default_shots: 1000
+
+# Maximum performance optimization
+performance:
+  enable_profiling: true
+  memory_optimization: true
+  cache_kernels: true
+  parallel_compilation: true
+  optimization_level: 3  # Maximum optimization
+
+# Detailed logging for performance monitoring
+logging:
+  log_level: "INFO"
+  log_file: "cuda_q_performance.log"
+  log_cuda_q_operations: true
+  log_performance_metrics: true
+  log_backend_selection: true
+
+# Installation settings for high-performance systems
+installation:
+  install_method: "pip"
+  version: "latest"
+  cuda_version: "12.2"
+  python_version: "3.11"
+  install_path: null
+  verify_installation: true
+
