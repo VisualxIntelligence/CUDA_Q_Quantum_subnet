@@ -1,0 +1,63 @@
+# CUDA-Q Quantum Subnet Miner Docker Image
+FROM nvidia/cuda:12.2-devel-ubuntu22.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONPATH=/app
+ENV CUDA_VISIBLE_DEVICES=all
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    python3.11 \
+    python3.11-pip \
+    python3.11-dev \
+    python3.11-venv \
+    git \
+    wget \
+    curl \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create symbolic links for python3
+RUN ln -sf /usr/bin/python3.11 /usr/bin/python3 && \
+    ln -sf /usr/bin/pip3 /usr/bin/pip
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements first for better caching
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Install CUDA-Q
+RUN pip3 install --no-cache-dir cuda-quantum
+
+# Copy application code
+COPY . .
+
+# Copy CUDA-Q integration files
+COPY cuda_q_quantum_subnet_package/src/cuda_q_peaked_solver.py qbittensor/miner/solvers/
+COPY cuda_q_quantum_subnet_package/src/cuda_q_config.py qbittensor/miner/solvers/
+COPY cuda_q_quantum_subnet_package/config/default_config.yaml cuda_q_config.yaml
+
+# Update miner imports for CUDA-Q
+RUN sed -i 's/from \.solvers\.default_peaked_solver import DefaultPeakedSolver/from .solvers.cuda_q_peaked_solver import CudaQPeakedSolver as DefaultPeakedSolver/' qbittensor/miner/miner.py
+
+# Create logs directory
+RUN mkdir -p logs
+
+# Validate installation
+RUN python3 cuda_q_quantum_subnet_package/scripts/validate_installation.py
+
+# Expose any necessary ports
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD python3 -c "import cudaq; print('CUDA-Q healthy')" || exit 1
+
+# Run the miner
+CMD ["python3", "-m", "neurons.miner"]
+
